@@ -4,8 +4,8 @@ from dutch_news_scraper.scraper import BaseScraper, Result
 
 
 class TechzineScraper(BaseScraper):
-    def __init__(self):
-        super.__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.name = "techzine"
         self.base_url = "https://www.techzine.nl/"
 

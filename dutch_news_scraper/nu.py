@@ -4,16 +4,16 @@ from dutch_news_scraper.scraper import BaseScraper, Result
 
 
 class NuScraper(BaseScraper):
-    def __init__(self):
-        super.__init__()
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
         self.name = "nu"
         self.base_url = "https://www.nu.nl/amsterdam/"
 
-    def run(self):
+    def run(self, start: int = 6267160, end: int = 6267165):
         # 6260000 # 2023 april
         # 6265004 # 2023 may
         # 6267165 # 2023 june
-        links = [f"{self.base_url}{i}" for i in range(6234500, 6267165)]
+        links = [f"{self.base_url}{i}" for i in range(start, end)]
         results = self.scrape_childs(links)
         df_result = self.to_df(results)
         return df_result
@@ -33,3 +33,9 @@ class NuScraper(BaseScraper):
 
         result = Result(title, body, date, url)
         return result
+
+
+if __name__ == "__main__":
+    scraper = NuScraper()
+    result = scraper.run()
+    print(result.head())

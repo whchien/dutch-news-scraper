@@ -4,9 +4,10 @@ from dutch_news_scraper.scraper import BaseScraper, Result
 
 
 class NrcScraper(BaseScraper):
-    def __init__(self):
-        super.__init__()
-        self.name = "techzine"
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.name = "nrc"
+        self.base_url = ""
 
     def identify_parent_links(self, n_pages: int = 3) -> List[str]:
         types = [

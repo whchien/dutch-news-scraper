@@ -1,4 +1,5 @@
 import multiprocessing as mp
+import warnings
 from typing import Dict, Union, List
 from dataclasses import dataclass
 
@@ -17,8 +18,7 @@ class Result:
 
 
 class BaseScraper(object):
-    def __init__(self, name: str = "generic"):
-        self.name = name
+    def __init__(self):
         self.pools = mp.cpu_count()
         self.result_dict: Dict[str, list] = {k: [] for k in ["title", "date", "body", "url"]}
         self.result_df = None
@@ -30,13 +30,13 @@ class BaseScraper(object):
     def _prepare_soup(url: str, headers: Union[Dict[str, str], None] = None) -> BeautifulSoup:
         res = requests.get(url, headers=headers)
         if res.status_code in (403, 404, 410):
-            raise Exception(f"Page not found. HTTP {res.status_code}: {url}")
-        soup = BeautifulSoup(res.text, "lxml")
+            warnings.warn(f"Page not found. HTTP {res.status_code}: {url}", UserWarning)
+        soup = BeautifulSoup(res.text, "html.parser")
         return soup
 
     def to_df(self, results: List[Result]) -> pd.DataFrame:
         for k, _ in self.result_dict.items():
-            self.result_dict[k] = [result.k for result in results]  # type: ignore
+            self.result_dict[k] = [result.__getattribute__(k) for result in results]
 
         result_df = pd.DataFrame(self.result_dict)
         return result_df
@@ -63,6 +63,7 @@ class BaseScraper(object):
         all_child_links = process_map(
             self.scrape_one_parent, parent_links, max_workers=self.pools
         )
+        all_child_links = [x for c in all_child_links for x in c]
         self.child_links = all_child_links
         return all_child_links
 
