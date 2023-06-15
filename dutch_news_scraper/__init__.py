@@ -4,7 +4,7 @@ from dutch_news_scraper.techzine import TechzineScraper
 
 class NewsScrpaer:
 
-    def __init__(self, name: str):
+    def __init__(self, name: str, **kwargs):
         scrapers = {"techzine": TechzineScraper,
                     "nu": NuScraper}
         self.name = name
@@ -15,5 +15,5 @@ class NewsScrpaer:
 
 
 if __name__ == "__main__":
-    scraper = NewsScrpaer(name="nl")
+    scraper = NewsScrpaer(name="nu")
     scraper.run()

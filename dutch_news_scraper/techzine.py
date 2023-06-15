@@ -24,9 +24,9 @@ class TechzineScraper(BaseScraper):
             "infrastructure",
         ]
         all_parents = [
-            f"{self.base_url}{type}/page/{i}"
+            f"{self.base_url}{t}/page/{i}"
             for i in range(1, n_pages + 1)
-            for type in types
+            for t in types
         ]
         return all_parents
 
@@ -42,7 +42,12 @@ class TechzineScraper(BaseScraper):
         soup = self._prepare_soup(url)
         title = soup.select(".entry-header .entry-title")[0].text
         body = [i.text for i in soup.select("#main p , .entry-header .entry-title")]
-        body = " ".join(body)
+        body: str = " ".join(body)
         date = soup.select(".published")[0].text
         result = Result(title, body, date, url)
         return result
+
+
+if __name__ == "__main__":
+    scraper = TechzineScraper()
+    scraper.run()

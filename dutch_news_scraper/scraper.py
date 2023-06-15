@@ -1,6 +1,6 @@
 import multiprocessing as mp
 import warnings
-from typing import Dict, Union, List
+from typing import Dict, Union, List, Any
 from dataclasses import dataclass
 
 import pandas as pd
@@ -73,9 +73,9 @@ class BaseScraper(object):
         return all_parents_links
 
     def run(
-        self, n_pages: int = 3, to_df: bool = True
+        self, to_df: bool = True, *args: Any, **kwargs: Any
     ) -> Union[pd.DataFrame, List[Result]]:
-        all_parents = self.identify_parent_links(n_pages)
+        all_parents = self.identify_parent_links(**kwargs)
         all_childs = self.scrape_parents(all_parents)
         results = self.scrape_childs(all_childs)
         if to_df:

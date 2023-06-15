@@ -1,10 +1,9 @@
-import time
 
 import pandas as pd
 
 from dutch_news_scraper.utils.date_prep import get_date_list
 
-from typing import List, Union
+from typing import List, Union, Any
 
 from dutch_news_scraper.scraper import BaseScraper, Result
 
@@ -55,5 +54,5 @@ class NosScraper(BaseScraper):
 if __name__ == "__main__":
     scraper = NosScraper()
     result = scraper.run()
-    print(result.head())
+    # print(result.head())
 
