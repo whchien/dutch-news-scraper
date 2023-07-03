@@ -1,11 +1,9 @@
+from typing import Any, List, Union
 
 import pandas as pd
 
-from dutch_news_scraper.utils.date_prep import get_date_list
-
-from typing import List, Union, Any
-
 from dutch_news_scraper.scraper import BaseScraper, Result
+from dutch_news_scraper.utils.date_prep import get_date_list
 
 
 class NosScraper(BaseScraper):
@@ -30,9 +28,9 @@ class NosScraper(BaseScraper):
     def scrape_one_child(self, url: str) -> Result:
         url = f"{self.base_url_child}{url}"
         soup = self._prepare_soup(url)
-        title = soup.find("h1").getText()
-        body = [i.getText() for i in soup.find_all("p")]
-        body = " ".join(body)
+        title = soup.find("h1").getText()  # type: ignore
+        body_list = [i.getText() for i in soup.find_all("p")]
+        body = " ".join(body_list)
         date = "ddd"
         result = Result(title, body, date, url)
         return result
@@ -55,4 +53,3 @@ if __name__ == "__main__":
     scraper = NosScraper()
     result = scraper.run()
     # print(result.head())
-

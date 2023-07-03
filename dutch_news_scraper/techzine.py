@@ -1,4 +1,6 @@
-from typing import List
+from typing import List, Union
+
+import pandas as pd
 
 from dutch_news_scraper.scraper import BaseScraper, Result
 
@@ -41,11 +43,21 @@ class TechzineScraper(BaseScraper):
     def scrape_one_child(self, url: str) -> Result:
         soup = self._prepare_soup(url)
         title = soup.select(".entry-header .entry-title")[0].text
-        body = [i.text for i in soup.select("#main p , .entry-header .entry-title")]
-        body: str = " ".join(body)
+        body_list = [i.text for i in soup.select("#main p , .entry-header .entry-title")]
+        body = " ".join(body_list)
         date = soup.select(".published")[0].text
         result = Result(title, body, date, url)
         return result
+
+    def run(self, to_df: bool = True, n_pages: int = 3) -> Union[pd.DataFrame, List[Result]]:
+        all_parents = self.identify_parent_links(n_pages)
+        all_childs = self.scrape_parents(all_parents)
+        results = self.scrape_childs(all_childs)
+        if to_df:
+            df_result = self.to_df(results)
+            return df_result
+        else:
+            return results
 
 
 if __name__ == "__main__":

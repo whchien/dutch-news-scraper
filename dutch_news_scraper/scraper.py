@@ -1,7 +1,8 @@
 import multiprocessing as mp
 import warnings
-from typing import Dict, Union, List, Any
+from abc import ABC, abstractmethod
 from dataclasses import dataclass
+from typing import Any, Dict, List, Union
 
 import pandas as pd
 import requests
@@ -17,7 +18,7 @@ class Result:
     url: Union[str, None] = None
 
 
-class BaseScraper(object):
+class BaseScraper(ABC):
     def __init__(self):
         self.pools = mp.cpu_count()
         self.result_dict: Dict[str, list] = {k: [] for k in ["title", "date", "body", "url"]}
@@ -67,19 +68,10 @@ class BaseScraper(object):
         self.child_links = all_child_links
         return all_child_links
 
-    def identify_parent_links(self, n_pages: int = 3) -> List[str]:
-        all_parents_links = [f"{self.base_url}/{i}" for i in range(1, n_pages)]
-        self.parent_links = all_parents_links
-        return all_parents_links
+    @abstractmethod
+    def identify_parent_links(self):
+        pass
 
-    def run(
-        self, to_df: bool = True, *args: Any, **kwargs: Any
-    ) -> Union[pd.DataFrame, List[Result]]:
-        all_parents = self.identify_parent_links(**kwargs)
-        all_childs = self.scrape_parents(all_parents)
-        results = self.scrape_childs(all_childs)
-        if to_df:
-            df_result = self.to_df(results)
-            return df_result
-        else:
-            return results
+    @abstractmethod
+    def run(self):
+        pass

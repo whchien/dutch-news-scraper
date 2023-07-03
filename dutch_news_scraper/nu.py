@@ -1,4 +1,5 @@
 import re
+from typing import List
 
 from dutch_news_scraper.scraper import BaseScraper, Result
 
@@ -8,6 +9,11 @@ class NuScraper(BaseScraper):
         super().__init__(*args, **kwargs)
         self.name = "nu"
         self.base_url = "https://www.nu.nl/amsterdam/"
+
+    def identify_parent_links(self, n_pages: int = 3) -> List[str]:
+        all_parents_links = [f"{self.base_url}/{i}" for i in range(1, n_pages)]
+        self.parent_links = all_parents_links
+        return all_parents_links
 
     def run(self, start: int = 6267160, end: int = 6267165):
         # 6260000 # 2023 april
@@ -29,7 +35,7 @@ class NuScraper(BaseScraper):
             date = heads[0].split('datePublished":"')[1].split("T")[0]
 
         except IndexError:
-            title, url, date, body = None, None, None, None
+            title, url, date, body = None, None, None, None  # type: ignore
 
         result = Result(title, body, date, url)
         return result
